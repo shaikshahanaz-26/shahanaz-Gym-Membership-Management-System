@@ -1,0 +1,14 @@
+<%- include('partials/header') %>
+<div class="page-title"><div><span class="eyebrow">MEMBER DIRECTORY</span><h1>Gym Members</h1><p>Keep your member community organized and thriving.</p></div></div>
+<section class="panel form-panel"><div class="panel-head"><div><span class="eyebrow">NEW MEMBER</span><h3>Add a member</h3></div></div>
+<form action="/members/add" method="POST" class="form-grid">
+<input name="name" placeholder="Full name" required><input name="email" type="email" placeholder="Email address" required><input name="phone" placeholder="Phone number">
+<label>Join date<input name="join_date" type="date" required value="<%= new Date().toISOString().slice(0,10) %>"></label>
+<select name="status"><option>Active</option><option>Inactive</option></select>
+<select name="trainer_id"><option value="">Assign trainer (optional)</option><% trainers.forEach(t=>{ %><option value="<%= t.trainer_id %>"><%= t.trainer_name %></option><% }) %></select>
+<button class="btn" type="submit">＋ Add member</button></form></section>
+<section class="panel"><div class="panel-head"><div><span class="eyebrow">YOUR COMMUNITY</span><h3>Member list <span class="count"><%= members.length %></span></h3></div><form class="search-form" method="GET"><input name="search" value="<%= search %>" placeholder="Search members..."><button class="btn btn-small">Search</button></form></div>
+<div class="table-wrap"><table><thead><tr><th>Member</th><th>Contact</th><th>Joined</th><th>Status</th><th>Trainer</th><th>Actions</th></tr></thead><tbody>
+<% members.forEach(m=>{ %><tr><td><b><%= m.name %></b><small class="subline">ID #<%= m.member_id %></small></td><td><%= m.email %><small class="subline"><%= m.phone || '—' %></small></td><td><%= m.join_date %></td><td><span class="status <%= m.status.toLowerCase() %>"><%= m.status %></span></td><td><%= m.trainers || 'Not assigned' %></td><td class="actions"><details><summary>Edit</summary><form action="/members/<%= m.member_id %>/edit" method="POST" class="edit-form"><input name="name" value="<%= m.name %>" required><input name="email" type="email" value="<%= m.email %>" required><input name="phone" value="<%= m.phone || '' %>"><input name="join_date" type="date" value="<%= m.join_date %>" required><select name="status"><option <%= m.status==='Active'?'selected':'' %>>Active</option><option <%= m.status==='Inactive'?'selected':'' %>>Inactive</option></select><button class="btn btn-small">Save changes</button></form></details><form action="/members/<%= m.member_id %>/delete" method="POST" onsubmit="return confirm('Delete this member? Their subscriptions will also be removed.')"><button class="btn-danger">Delete</button></form></td></tr><% }) %>
+</tbody></table></div><% if(!members.length){ %><div class="empty">No members found. Add your first member above.</div><% } %></section>
+<%- include('partials/footer') %>
